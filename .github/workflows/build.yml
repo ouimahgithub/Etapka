@@ -1,0 +1,32 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Génération du Gradle Wrapper & Build APK Debug
+        run: |
+          gradle wrapper
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace
+
+      - name: Sauvegarde de l'APK en Artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: etapka-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
